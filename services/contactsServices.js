@@ -1,61 +1,35 @@
-import fs from "fs/promises";
-import path from "path";
-import { nanoid } from "nanoid";
-
-const contactsPath = path.resolve("db", "contacts.json");
+import Contact from "../db/models/Contacts.js";
 
 async function listContacts() {
-  //Повертає масив контактів.
-  return JSON.parse(await fs.readFile(contactsPath));
+    return Contact.findAll();
 }
 
-async function getContactById(contactId) {
-  //Повертає об'єкт контакту з таким id. Повертає null, якщо контакт з таким id не знайдений.
-  const contacts = await listContacts();
-  return contacts.find((contact) => contact.id === contactId) || null;
+async function getContactById(id) {
+    return Contact.findByPk(id);
 }
 
-async function removeContact(contactId) {
-  //Повертає об'єкт видаленого контакту. Повертає null, якщо контакт з таким id не знайдений.
-  const contacts = await listContacts();
-  const index = contacts.findIndex((contact) => contact.id === contactId);
-  if (index === -1) return null;
+async function removeContact(id) {
+    const rowToReturn = Contact.findByPk(id);
+    if (!rowToReturn) throw new Error();
 
-  const contactToReturn = contacts.splice(index, 1)[0];
-  await saveDB(contacts);
-  return contactToReturn;
+    await Contact.destroy({
+        where: { id },
+    });
+
+    return rowToReturn;
 }
 
-async function addContact({ name, email, phone }) {
-  //Повертає об'єкт доданого контакту (з id).
-  const contacts = await listContacts();
-  const id = nanoid();
-  contacts.push({ id, name, email, phone });
-  await saveDB(contacts);
-
-  return contacts[contacts.length - 1];
+async function addContact(data) {
+    return Contact.create(data);
 }
 
-async function updateContactById(contactId, data) {
-  const contacts = await listContacts();
-  const index = contacts.findIndex((contact) => contact.id === contactId);
-  if (index === -1) return null;
+async function updateContactById(id, data) {
+    const contact = await Contact.findByPk(id);
+    if (!contact) return null;
 
-  contacts[index] = { ...contacts[index], ...data };
-
-  await saveDB(contacts);
-
-  return contacts[index];
+    return contact.update(data, {
+        returning: true,
+    });
 }
 
-async function saveDB(contacts) {
-  return fs.writeFile(contactsPath, JSON.stringify(contacts, undefined, 2));
-}
-
-export {
-  listContacts,
-  getContactById,
-  removeContact,
-  addContact,
-  updateContactById,
-};
+export { listContacts, getContactById, removeContact, addContact, updateContactById };
