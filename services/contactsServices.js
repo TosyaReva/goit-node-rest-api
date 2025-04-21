@@ -9,7 +9,7 @@ async function getContactById(id) {
 }
 
 async function removeContact(id) {
-    const rowToReturn = Contact.findByPk(id);
+    const rowToReturn = await Contact.findByPk(id);
     if (!rowToReturn) throw new Error();
 
     await Contact.destroy({
