@@ -1,6 +1,7 @@
 import { DataTypes } from "sequelize";
 
 import sequelize from "../Sequelize.js";
+import { emailRegexp } from "../../constants/auth.js";
 
 const Contact = sequelize.define("contact", {
     name: {
@@ -26,6 +27,7 @@ const Contact = sequelize.define("contact", {
             notEmpty: {
                 msg: "email cannot be empty",
             },
+            is: emailRegexp,
         },
     },
     phone: {
@@ -50,8 +52,12 @@ const Contact = sequelize.define("contact", {
             },
         },
     },
+    owner: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
 });
 
-// Contact.sync();
+// Contact.sync({ force: true });
 
 export default Contact;

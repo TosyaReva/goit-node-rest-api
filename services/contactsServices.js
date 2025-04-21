@@ -1,19 +1,24 @@
 import Contact from "../db/models/Contacts.js";
 
-async function listContacts() {
-    return Contact.findAll();
+async function listContacts(query, filters = {}) {
+    return Contact.findAll({
+        where: query,
+        ...filters,
+    });
 }
 
-async function getContactById(id) {
-    return Contact.findByPk(id);
+async function getContact(query) {
+    return Contact.findOne({
+        where: query,
+    });
 }
 
-async function removeContact(id) {
-    const rowToReturn = await Contact.findByPk(id);
+async function removeContact(query) {
+    const rowToReturn = await getContact(query);
     if (!rowToReturn) throw new Error();
 
     await Contact.destroy({
-        where: { id },
+        where: query,
     });
 
     return rowToReturn;
@@ -23,8 +28,8 @@ async function addContact(data) {
     return Contact.create(data);
 }
 
-async function updateContactById(id, data) {
-    const contact = await Contact.findByPk(id);
+async function updateContactById(query, data) {
+    const contact = await getContact(query);
     if (!contact) return null;
 
     return contact.update(data, {
@@ -32,4 +37,4 @@ async function updateContactById(id, data) {
     });
 }
 
-export { listContacts, getContactById, removeContact, addContact, updateContactById };
+export { listContacts, getContact, removeContact, addContact, updateContactById };
