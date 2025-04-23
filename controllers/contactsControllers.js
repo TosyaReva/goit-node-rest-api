@@ -57,7 +57,8 @@ const updateContact = async (req, res) => {
 
 const updateStatusContact = async (req, res) => {
     const { id } = req.params;
-    const data = await updateContactById({ id }, req.body);
+    const { id: owner } = req.user;
+    const data = await updateContactById({ id, owner }, req.body);
 
     if (!data) throw HttpError(404, "Not found");
 
