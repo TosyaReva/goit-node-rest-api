@@ -16,7 +16,7 @@ async function getContact(query) {
 
 async function removeContact(query) {
     const rowToReturn = await getContact(query);
-    if (!rowToReturn) throw HttpError(400, "Contact not found")();
+    if (!rowToReturn) throw HttpError(404, "Contact not found");
 
     await Contact.destroy({
         where: query,
