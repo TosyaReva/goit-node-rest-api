@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import gravatar from "gravatar";
 
 import { User } from "../db/models/Users.js";
 import HttpError from "../helpers/HttpError.js";
@@ -16,7 +17,8 @@ export async function signupUser(data) {
 
     const hashPassword = await bcrypt.hash(password, 12);
 
-    return User.create({ ...data, password: hashPassword });
+    const avatarURL = gravatar.url(email, { s: 100, protocol: "https" });
+    return User.create({ ...data, password: hashPassword, avatarURL });
 }
 
 export async function loginUser(data) {
@@ -58,7 +60,7 @@ export const logoutUser = async (id) => {
     await user.update({ token: null });
 };
 
-export const subscribeUser = async (user, body) => {
+export const updateUser = async (user, body) => {
     return user.update(body, {
         returning: true,
     });

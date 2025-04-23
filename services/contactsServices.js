@@ -1,4 +1,5 @@
 import Contact from "../db/models/Contacts.js";
+import HttpError from "../helpers/HttpError.js";
 
 async function listContacts(query, filters = {}) {
     return Contact.findAll({
@@ -15,7 +16,7 @@ async function getContact(query) {
 
 async function removeContact(query) {
     const rowToReturn = await getContact(query);
-    if (!rowToReturn) throw new Error("Contact not found");
+    if (!rowToReturn) throw HttpError(400, "Contact not found")();
 
     await Contact.destroy({
         where: query,
