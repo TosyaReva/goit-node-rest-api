@@ -1,6 +1,6 @@
 import ctrlWrapper from "../decorators/ctrlWrapper.js";
 import HttpError from "../helpers/HttpError.js";
-import { loginUser, logoutUser, signupUser, updateUser } from "../services/authServices.js";
+import { loginUser, logoutUser, signupUser, updateUser, verifyUser, resendVerifyEmail } from "../services/authServices.js";
 import path from "node:path";
 import fs from "node:fs/promises";
 
@@ -17,6 +17,25 @@ const signupController = async (req, res) => {
         },
     });
 };
+
+const verifyController = async (req, res) => {
+    const { verificationToken } = req.params;
+    await verifyUser(verificationToken);
+
+    res.json({
+        message: "Verification successful",
+    });
+};
+
+const resendVerifyEmailController = async (req, res) => {
+    const { email } = req.body;
+    await resendVerifyEmail(email);
+
+    res.json({
+        message: "Verification email sent",
+    });
+};
+
 const loginController = async (req, res) => {
     const { user, token } = await loginUser(req.body);
 
@@ -84,6 +103,8 @@ const updateAvatarController = async (req, res) => {
 
 export default {
     signupController: ctrlWrapper(signupController),
+    verifyController: ctrlWrapper(verifyController),
+    resendVerifyEmailController: ctrlWrapper(resendVerifyEmailController),
     loginController: ctrlWrapper(loginController),
     logoutController: ctrlWrapper(logoutController),
     currentController: ctrlWrapper(currentController),

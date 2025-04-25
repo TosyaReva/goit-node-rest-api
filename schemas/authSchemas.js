@@ -9,3 +9,7 @@ export const authSignupSchema = Joi.object({
 export const subscriptionSchema = Joi.object({
     subscription: Joi.string().valid("starter", "pro", "business").required().error(new Error("Field 'subscription' is required and should be 'starter', 'pro' or 'business'")),
 });
+
+export const verifySchema = Joi.object({
+    email: Joi.string().pattern(emailRegexp).required().error(new Error("missing required field email")),
+});
